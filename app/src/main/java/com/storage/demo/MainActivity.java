@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * StatFs操作
+     */
     private void getSpace() {
 
         //经测试，参数不管用context还是Environment，结果没影响
@@ -141,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
     private void getContextFile() {
         try {

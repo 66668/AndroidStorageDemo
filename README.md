@@ -1,2 +1,2 @@
 博客示例代码
-博客 <https://github.com/66668/AndroidStorageDemo>
+博客 <http://blog.csdn.net/sjy0118/article/details/78689674>
