@@ -1,5 +1,6 @@
 package com.storage.demo;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,19 +31,58 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //        getEnvironmentFile();
+//        getPublicExternal();
 
-        //        getContextFile();
+//                getEnvironmentFile();
 
-        //        getSpace();
+        //                getContextFile();
 
-//        getExternal();
+        //                getSpace();
 
-//        Log.d(TAG, getExtendedMemoryPath(this));
+
+        //                Log.d(TAG, getExtendedMemoryPath(this));
+
+                getRamSpace();
 
     }
 
-    private void getExternal() {
+
+    /**
+     *
+     */
+    private void getRamSpace() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        long availableLong = memoryInfo.availMem;
+        long totalLong = memoryInfo.totalMem;
+        //红米pro: RAM可用空间：885M
+        //三星xplay6: RAM可用空间：2953M
+        Log.d(TAG, "RAM可用空间：" + availableLong / 1024 / 1024 + "M");
+        // RAM总空间：2718M
+        //三星xplay6: RAM总空间：5696M
+        Log.d(TAG, "RAM总空间：" + totalLong / 1024 / 1024 + "M");
+
+        int memory = activityManager.getMemoryClass();
+        float maxMemory = (float) (Runtime.getRuntime().maxMemory() * 1.0 / (1024 * 1024));
+        float totalMemory = (float) (Runtime.getRuntime().totalMemory() * 1.0 / (1024 * 1024));
+        //剩余内存
+        float freeMemory = (float) (Runtime.getRuntime().freeMemory() * 1.0 / (1024 * 1024));
+
+        //该进程最大分配内存：384M--384.0M
+        Log.d(TAG, "该进程最大分配内存：" + memory + "M" + "--" + maxMemory + "M");
+
+        //该进程总内存：16.027634M
+        Log.d(TAG, "该进程总内存：" + totalMemory + "M");
+
+        //该进程剩余内存：4.1224976M
+        Log.d(TAG, "该进程剩余内存：" + freeMemory + "M");
+    }
+
+    /**
+     *
+     */
+    private void getPublicExternal() {
         String basePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         File file = new File(basePath, "AAAA/BBB");
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -146,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Context操作的File文件
+     */
     private void getContextFile() {
         try {
 
