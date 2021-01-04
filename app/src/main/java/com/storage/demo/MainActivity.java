@@ -7,15 +7,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.os.Environment.DIRECTORY_MOVIES;
 
@@ -23,27 +27,35 @@ import static android.os.Environment.DIRECTORY_MOVIES;
  * 测试机是红米pro
  */
 public class MainActivity extends AppCompatActivity {
-    private final String TAG = "SJY";
+    private static String TAG = "SJY";
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initListener();
+        // getPublicExternal();
 
-//        getPublicExternal();
+//        getEnvironmentFile();
 
-//                getEnvironmentFile();
+//        getContextFile();
 
-        //                getContextFile();
+//         getSpace();
 
-        //                getSpace();
+        Log.d(TAG, "扩展TF卡路径1=" + getExtendedMemoryPath(this));
+//        getRamSpace();
 
+//        testVal();
+    }
 
-        //                Log.d(TAG, getExtendedMemoryPath(this));
-
-                getRamSpace();
-
+    private void initListener() {
+        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "获取TF卡路径=" + Utils.PATH_TEST);
+            }
+        });
     }
 
 
@@ -100,13 +112,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 获取扩展sd卡路径
+     * 获取扩展sd卡路径-方式1：反射拿StorageVolume
      *
      * @param mContext
      * @return
      */
     private static String getExtendedMemoryPath(Context mContext) {
-
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
         Class<?> storageVolumeClazz = null;
         try {
@@ -121,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 String path = (String) getPath.invoke(storageVolumeElement);
                 boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
                 if (removable) {
+                    Log.d(TAG, "反射获取TF路径 = " + path);
                     return path;
                 }
             }
@@ -133,9 +145,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return "没有扩展sd卡";
+        return "/storage/sdcard1";//默认为5.1版本的TF路径
     }
-
 
     /**
      * StatFs操作
@@ -273,38 +284,39 @@ public class MainActivity extends AppCompatActivity {
     private void getEnvironmentFile() {
 
         //1.返回结果： /data
-        Log.d(TAG, Environment.getDataDirectory().toString());
+        Log.d(TAG, "getDataDirectory=" + Environment.getDataDirectory().toString());
 
         //2.返回结果： /cache
-        Log.d(TAG, Environment.getDownloadCacheDirectory().toString());
+        Log.d(TAG, "getDownloadCacheDirectory=" + Environment.getDownloadCacheDirectory().toString());
 
         //3.返回结果： /storage/emulated/0
-        Log.d(TAG, Environment.getExternalStorageDirectory().toString());
+        Log.d(TAG, "getExternalStorageDirectory=" + Environment.getExternalStorageDirectory().toString());
 
         //4.返回结果：mounted
-        Log.d(TAG, Environment.getExternalStorageState().toString());
+        Log.d(TAG, "getExternalStorageState=" + Environment.getExternalStorageState().toString());
 
         //5.返回结果:mounted
-        Log.d(TAG, Environment.getExternalStorageState(new File(Environment.getExternalStorageDirectory(), "demo.png")).toString());
+        Log.d(TAG, "getExternalStorageState=" + Environment.getExternalStorageState(new File(Environment.getExternalStorageDirectory(), "demo.png")).toString());
 
         //6.返回结果:system
-        Log.d(TAG, Environment.getRootDirectory().toString());
+        Log.d(TAG, "getRootDirectory=" + Environment.getRootDirectory().toString());
 
         //7.返回结果:false
-        Log.d(TAG, Environment.isExternalStorageEmulated() + "");
+        Log.d(TAG, "isExternalStorageEmulated=" + Environment.isExternalStorageEmulated() + "");
 
         //8.返回结果:false
-        Log.d(TAG, Environment.isExternalStorageEmulated(new File(Environment.getExternalStorageDirectory(), "demo.png")) + "");
+        Log.d(TAG, "isExternalStorageEmulated=" + Environment.isExternalStorageEmulated(new File(Environment.getExternalStorageDirectory(), "demo.png")) + "");
 
         //9.返回结果:false 表示是内置内存卡
-        Log.d(TAG, Environment.isExternalStorageRemovable() + "");
+        Log.d(TAG, "isExternalStorageRemovable=" + Environment.isExternalStorageRemovable() + "");
 
         //10.返回结果:false 表示是内置内存卡
-        Log.d(TAG, Environment.isExternalStorageRemovable(new File(Environment.getExternalStorageDirectory(), "demo.png")) + "");
+        Log.d(TAG, "isExternalStorageRemovable=" + Environment.isExternalStorageRemovable(new File(Environment.getExternalStorageDirectory(), "demo.png")) + "");
 
         /**
          * 十大共有目录
          */
+        Log.d(TAG, "十大共有目录:");
         //11-1.返回结果：storage/emulated/0/Music
         Log.d(TAG, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).toString());
 
@@ -335,6 +347,9 @@ public class MainActivity extends AppCompatActivity {
         //11-10.返回结果：storage/emulated/0/Ringtones
         Log.d(TAG, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES).toString());
 
+    }
 
+    private void testVal() {
+        Utils.PATH_TEST = "测试路径";
     }
 }
